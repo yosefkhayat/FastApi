@@ -1,6 +1,8 @@
-from fastapi import APIRouter
-from db import db
-from .student import Student
+from fastapi import APIRouter, Depends
+from db import student_db_fns
+from classes.student import Student
+from auth.auth_bearer import JWTBearer
+
 
 #router to students
 router = APIRouter(
@@ -9,9 +11,9 @@ router = APIRouter(
 )
 
 #Get all Students
-@router.get('/')
+@router.get('/',dependencies=[Depends(JWTBearer(role='guest'))])
 def getAllStudents():
-    students = db.getAllStudents()
+    students = student_db_fns.getAllStudents()
     if len(students) == 0:
         return {
             "message" : "Database is empty!"
@@ -21,9 +23,9 @@ def getAllStudents():
 
 
 #get student by name
-@router.get('/get-by-name')
+@router.get('/get-by-name',dependencies=[Depends(JWTBearer(role='guest'))])
 def getStudentByName(name:str):
-    student = db.getStudentByName(name)
+    student = student_db_fns.getStudentByName(name)
     if len(student) == 0:
         return {
             "message" : f'no student by name {name}'
@@ -32,10 +34,10 @@ def getStudentByName(name:str):
         return student
 
 #get students names in class
-@router.get('/get-by-class')
+@router.get('/get-by-class',dependencies=[Depends(JWTBearer(role='admin'))])
 def getStudentsInClass(className:str):
     studentsNames = []
-    students = db.getAllStudentInClass(className)
+    students = student_db_fns.getAllStudentInClass(className)
     if len(students) == 0:
         return {
             "message" : "No students"
@@ -46,9 +48,9 @@ def getStudentsInClass(className:str):
         return studentsNames
 
 #add student to the database
-@router.post('/add/{}')
+@router.post('/add',dependencies=[Depends(JWTBearer(role='admin'))])
 def create_student(student: Student):
-    db.addStudent(student)
+    student_db_fns.addStudent(student)
     return{
             "message" : "student was created successfully"
         }

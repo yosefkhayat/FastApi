@@ -1,8 +1,10 @@
 from fastapi import FastAPI
-from students_api import student_api
+from routes import student_api,auth_api
+
 server = FastAPI()
 
 server.include_router(student_api.router)
+server.include_router(auth_api.router)
 #test the server is up
 @server.get("/test")
 def test():
