@@ -40,12 +40,17 @@ def addStudent(student: Student):
 def getAllStudentInClass(className):
     return db.search(Students.classes.any(className))
 
+def deleteStudentByID(id:int):
+    db.remove(doc_ids=[id])
 
+def deleteAllStudent():
+    db.truncate()
 
-#seed()
+seed()
 
 
 #x = student.Student(name="tesla",age=35,classes=[classNames[4]])
 #db.insert(document={'name': x.name,'age': x.age, 'classes': x.classes})
 #for i in x:
 #   print(i)
+

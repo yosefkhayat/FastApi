@@ -6,7 +6,7 @@ from auth.jwt_handler import decodeJWT
 
 
 class JWTBearer(HTTPBearer):
-    def __init__(self,role:str, auto_error: bool = True):
+    def __init__(self,role, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
         self.role = role
 
@@ -29,7 +29,7 @@ class JWTBearer(HTTPBearer):
         except:
             payload = None
         if payload :
-            if payload["role"] != self.role:
+            if payload["role"] not in self.role and self.role != 'all':
                 raise HTTPException(status_code=401, detail=" unauthorization.")
             isTokenValid = True
         return isTokenValid
